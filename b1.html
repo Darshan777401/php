@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Details</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+
+<label for="teacherSelect">Select a teacher:</label>
+<select id="teacherSelect"></select>
+
+<div id="teacherDetails"></div>
+
+<script>
+    $(document).ready(function(){
+    // Populate teacher select options
+    $.ajax({
+        url: 'get_teachers.php', // Assuming server-side script name is get_teachers.php
+        type: 'GET',
+        dataType: 'json',
+        success: function(data){
+            var select = $('#teacherSelect');
+            select.empty();
+            select.append('<option value="">Select Teacher</option>');
+            $.each(data, function(index, teacher){
+                select.append('<option value="' + teacher.tno + '">' + teacher.tname + '</option>');
+            });
+        },
+        error: function(){
+            alert('Failed to load teacher list.');
+        }
+    });
+
+    // Get teacher details on select change
+    $('#teacherSelect').change(function(){
+        var tno = $(this).val();
+        if(tno !== "") {
+            $.ajax({
+                url: 'get_teacher_details.php', // Assuming server-side script name is get_teacher_details.php
+                type: 'GET',
+                data: {tno: tno},
+                dataType: 'json',
+                success: function(teacher){
+                    $('#teacherDetails').html('<p><strong>Name:</strong> ' + teacher.tname + '</p>' +
+                                              '<p><strong>Qualification:</strong> ' + teacher.qualification + '</p>' +
+                                              '<p><strong>Salary:</strong> $' + teacher.salary + '</p>');
+                },
+                error: function(){
+                    $('#teacherDetails').text('Failed to load teacher details.');
+                }
+            });
+        } else {
+            $('#teacherDetails').empty();
+        }
+    });
+});
+
+</script>
+</body>
+</html>

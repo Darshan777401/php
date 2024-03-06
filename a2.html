@@ -1,0 +1,87 @@
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Greetings</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+
+<label for="nameInput">Enter your name:</label>
+<input type="text" id="nameInput">
+
+<div id="response"></div>
+
+<script>
+    $(document).ready(function(){
+    var typingTimer;
+    var doneTypingInterval = 500; // in milliseconds
+    
+    $('#nameInput').keyup(function(){
+        clearTimeout(typingTimer);
+        if ($('#nameInput').val()) {
+            typingTimer = setTimeout(sendRequest, doneTypingInterval);
+        } else {
+            // If name is not entered
+            $('#response').text("Stranger, please tell me your name!");
+        }
+    });
+});
+
+function sendRequest() {
+    var name = $('#nameInput').val();
+    $.ajax({
+        url: 'greet.php', // Assuming server-side script name is greet.php
+        type: 'POST',
+        data: {name: name},
+        success: function(response) {
+            $('#response').text(response);
+        },
+        error: function() {
+            $('#response').text("Error occurred while processing your request.");
+        }
+    });
+}
+</script>
+</body>
+</html>
+
+<!-- php file 
+<?php
+$name = $_POST['name'];
+if(empty($name)) {
+    echo "Stranger, please tell me your name!";
+} else if(in_array($name, array("Rohit", "Virat", "Dhoni", "Ashwin", "Harbhajan"))) {
+    echo "Hello, master $name!";
+} else {
+    echo "$name, I don't know you!";
+}
+?>
+-->
+
+<!-- only js
+$(document).ready(function(){
+    var typingTimer;
+    var doneTypingInterval = 500; // in milliseconds
+    
+    $('#nameInput').keyup(function(){
+        clearTimeout(typingTimer);
+        if ($('#nameInput').val()) {
+            typingTimer = setTimeout(processName, doneTypingInterval);
+        } else {
+            // If name is not entered
+            $('#response').text("Stranger, please tell me your name!");
+        }
+    });
+});
+
+function processName() {
+    var name = $('#nameInput').val();
+    if(["Rohit", "Virat", "Dhoni", "Ashwin", "Harbhajan"].includes(name)) {
+        $('#response').text("Hello, master " + name + "!");
+    } else {
+        $('#response').text(name + ", I don't know you!");
+    }
+}
+
+-->

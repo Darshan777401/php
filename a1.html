@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact List</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+
+<button id="printButton">Print Contacts</button>
+<div id="contactTable"></div>
+
+<script>
+    $(document).ready(function(){
+    $("#printButton").click(function(){
+        $.ajax({
+            url: 'contact.dat',
+            type: 'GET',
+            dataType: 'text',
+            success: function(data)
+            {
+                var records = data.split('\n');
+                
+                var table = '<table border="1"><tr><th>Sr. No.</th><th>Name</th><th>Residence Number</th><th>Mobile Number</th><th>Address</th></tr>';
+                
+                for(var i = 0; i < records.length; i++){
+                    var fields = records[i].split(',');
+                    if(fields.length >= 5) {
+                        table += '<tr><td>' + fields[0] + '</td><td>' + fields[1] + '</td><td>' + fields[2] + '</td><td>' + fields[3] + '</td><td>' + fields[4] + '</td></tr>';
+                    }
+                }
+                
+                table += '</table>';
+                $('#contactTable').html(table);
+            },
+            error: function(){
+                // Handle error
+                alert('Failed to load contact list.');
+            }
+        });
+    });
+});
+
+</script>
+</body>
+</html>

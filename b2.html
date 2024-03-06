@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Details</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+
+<label for="customerSelect">Select a customer:</label>
+<select id="customerSelect"></select>
+
+<div id="orderDetails"></div>
+
+<script>
+    $(document).ready(function(){
+    // Populate customer select options
+    $.ajax({
+        url: 'get_customers.php', // Assuming server-side script name is get_customers.php
+        type: 'GET',
+        dataType: 'json',
+        success: function(data){
+            var select = $('#customerSelect');
+            select.empty();
+            select.append('<option value="">Select Customer</option>');
+            $.each(data, function(index, customer){
+                select.append('<option value="' + customer.cno + '">' + customer.cname + '</option>');
+            });
+        },
+        error: function(){
+            alert('Failed to load customer list.');
+        }
+    });
+
+    // Get order details on select change
+    $('#customerSelect').change(function(){
+        var cno = $(this).val();
+        if(cno !== "") {
+            $.ajax({
+                url: 'get_order_details.php', // Assuming server-side script name is get_order_details.php
+                type: 'GET',
+                data: {cno: cno},
+                dataType: 'json',
+                success: function(orders){
+                    var details = '<h3>Order Details</h3>';
+                    if(orders.length > 0) {
+                        details += '<ul>';
+                        $.each(orders, function(index, order){
+                            details += '<li><strong>Order Number:</strong> ' + order.ono + '</li>' +
+                                       '<li><strong>Date:</strong> ' + order.odate + '</li>' +
+                                       '<li><strong>Shipping Address:</strong> ' + order.shipping_address + '</li><br>';
+                        });
+                        details += '</ul>';
+                    } else {
+                        details += 'No orders found for this customer.';
+                    }
+                    $('#orderDetails').html(details);
+                },
+                error: function(){
+                    $('#orderDetails').text('Failed to load order details.');
+                }
+            });
+        } else {
+            $('#orderDetails').empty();
+        }
+    });
+});
+
+</script>
+</body>
+</html>
